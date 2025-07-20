@@ -1,0 +1,36 @@
+{
+  "name": "farefair-complete-mern-app",
+  "version": "1.0.0",
+  "description": "FareFair - Complete MERN stack ride fare comparison application",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "server": "cd backend && npm start",
+    "client": "cd frontend && npm start",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install",
+    "build": "cd frontend && npm run build",
+    "deploy": "cd frontend && npm run build && cd ../backend && npm start",
+    "test": "cd backend && npm test && cd ../frontend && npm test"
+  },
+  "dependencies": {
+    "concurrently": "^8.2.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "farefair",
+    "mern",
+    "ride-sharing",
+    "uber",
+    "ola",
+    "rapido"
+  ],
+  "author": "FareFair Development Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/farefair-mern-app.git"
+  }
+}
