@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -16,10 +16,24 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(localStorage.getItem('token'));
 
-  // Set axios defaults
+  // Set axios base URL once (can be outside effect)
   const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
   axios.defaults.baseURL = API_BASE_URL;
 
+  // Memoize getCurrentUser so it's stable across renders
+  const getCurrentUser = useCallback(async () => {
+    try {
+      const response = await axios.get('/api/auth/me');
+      setUser(response.data.data.user);
+    } catch (error) {
+      console.error('Get current user error:', error);
+      logout();
+    } finally {
+      setLoading(false);
+    }
+  }, []); // No dependencies, so only created once
+
+  // Effect to run when token changes; sets auth header & fetches user
   useEffect(() => {
     if (token) {
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
@@ -27,29 +41,7 @@ export const AuthProvider = ({ children }) => {
     } else {
       setLoading(false);
     }
-  }, [token]);
-
-  const getCurrentUser = async () => {
-  try {
-    const response = await axios.get('/api/auth/me');
-    setUser(response.data.data.user);
-  } catch (error) {
-    console.error('Get current user error:', error);
-    logout();
-  } finally {
-    setLoading(false);
-  }
-};
-
-useEffect(() => {
-  if (token) {
-    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-    getCurrentUser();
-  } else {
-    setLoading(false);
-  }
-}, [token, getCurrentUser]); // ✅ Now declared above, so safe to add
-
+  }, [token, getCurrentUser]); // getCurrentUser safely included here
 
   const login = async (email, password) => {
     try {
