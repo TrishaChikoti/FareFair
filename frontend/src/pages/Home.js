@@ -1,4 +1,3 @@
-// src/pages/Home.js
 import React, { useState } from 'react';
 import axios from 'axios';
 import RideSearchForm from '../components/RideSearchForm';
@@ -16,29 +15,9 @@ const Home = () => {
     try {
       const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
       const response = await axios.post(`${API_BASE_URL}/api/rides/search`, searchData);
-
-      // Log full backend response for debugging
-      console.log('Ride search response:', response.data);
-
-      // Adjust this line based on backend response structure
-      // If backend returns {data: {results: [...]}}:
-      if (response.data.data && response.data.data.results) {
-        setSearchResults(response.data.data.results);
-      }
-      // Fallback: If backend returns {results: [...]}
-      else if (response.data.results) {
-        setSearchResults(response.data.results);
-      } else {
-        setSearchResults([]);
-        setError('Unexpected response from server.');
-      }
+      setSearchResults(response.data.data.results);
     } catch (error) {
-      console.error(error);
-      setError(
-        error.response?.data?.message ||
-        error.message ||
-        'Failed to search rides'
-      );
+      setError(error.response?.data?.message || 'Failed to search rides');
       setSearchResults([]);
     } finally {
       setLoading(false);
@@ -61,20 +40,8 @@ const Home = () => {
       </div>
 
       {error && (
-        <div className="error" style={{ color: 'red', margin: '16px 0' }}>
+        <div className="error">
           {error}
-        </div>
-      )}
-
-      {loading && (
-        <div style={{ color: 'white', margin: '16px 0' }}>
-          Loading...
-        </div>
-      )}
-
-      {!loading && !error && searchResults.length === 0 && (
-        <div style={{ color: 'white', margin: '16px 0' }}>
-          No rides found for your search.
         </div>
       )}
 
@@ -86,4 +53,3 @@ const Home = () => {
 };
 
 export default Home;
-
