@@ -4,14 +4,10 @@ const { body } = require('express-validator');
 const userController = require('../controllers/userController');
 const auth = require('../middleware/auth');
 
-// @route   GET /api/users/profile
-// @desc    Get user profile
-// @access  Private
+// Get user profile
 router.get('/profile', auth, userController.getProfile);
 
-// @route   PUT /api/users/profile
-// @desc    Update user profile
-// @access  Private
+// Update user profile
 router.put('/profile', auth,
   [
     body('name').optional().notEmpty(),
@@ -21,9 +17,7 @@ router.put('/profile', auth,
   userController.updateProfile
 );
 
-// @route   PUT /api/users/preferences
-// @desc    Update user preferences
-// @access  Private
+// Update preferences
 router.put('/preferences', auth, userController.updatePreferences);
 
 module.exports = router;
