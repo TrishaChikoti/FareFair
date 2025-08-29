@@ -18,7 +18,7 @@ app.use(morgan('combined'));
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 100, // limit each IP
   message: 'Too many requests from this IP, please try again later.'
 });
 app.use('/api/', limiter);
@@ -27,9 +27,20 @@ app.use('/api/', limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-// CORS configuration
+// ✅ CORS configuration (local + deployed)
+const allowedOrigins = [
+  'http://localhost:3000',
+  process.env.FRONTEND_URL // e.g. https://farefair.vercel.app
+].filter(Boolean);
+
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true
 }));
 
@@ -41,17 +52,12 @@ const connectDB = async () => {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
-    console.log('MongoDB connected successfully');
+    console.log('✅ MongoDB connected successfully');
   } catch (err) {
-    console.error('MongoDB connection error:', err.message);
+    console.error('❌ MongoDB connection error:', err.message);
     console.log('⚠️  Running without database - some features may be limited');
-    console.log('💡 To fix this:');
-    console.log('   1. Install MongoDB: brew install mongodb-community');
-    console.log('   2. Start MongoDB: brew services start mongodb-community');
-    console.log('   3. Or use MongoDB Atlas (cloud database)');
   }
 };
-
 connectDB();
 
 // Routes
@@ -64,16 +70,16 @@ app.get('/', (req, res) => {
   res.send('FareFair backend API is running');
 });
 
-// Health check endpoint
+// Health check
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
     uptime: process.uptime()
   });
 });
 
-// Error handling middleware
+// Error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
@@ -87,9 +93,10 @@ app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
+// Server
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
 
 module.exports = app;
