@@ -4,37 +4,29 @@ const { body } = require('express-validator');
 const authController = require('../controllers/authController');
 const auth = require('../middleware/auth');
 
-// @route   POST /api/auth/register
-// @desc    Register a new user
-// @access  Public
+// Register
 router.post('/register',
   [
     body('name').notEmpty().withMessage('Name is required'),
-    body('email').isEmail().withMessage('Please provide a valid email'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+    body('email').isEmail().withMessage('Valid email required'),
+    body('password').isLength({ min: 6 }).withMessage('Password min 6 chars')
   ],
   authController.register
 );
 
-// @route   POST /api/auth/login
-// @desc    Login user
-// @access  Public
+// Login
 router.post('/login',
   [
-    body('email').isEmail().withMessage('Please provide a valid email'),
-    body('password').notEmpty().withMessage('Password is required')
+    body('email').isEmail(),
+    body('password').notEmpty()
   ],
   authController.login
 );
 
-// @route   GET /api/auth/me
-// @desc    Get current user
-// @access  Private
+// Get current user
 router.get('/me', auth, authController.getMe);
 
-// @route   POST /api/auth/logout
-// @desc    Logout user
-// @access  Private
+// Logout
 router.post('/logout', auth, authController.logout);
 
 module.exports = router;
