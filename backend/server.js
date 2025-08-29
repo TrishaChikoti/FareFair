@@ -1,7 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const cors = require('cors');
-const connectDB = require('./config/db'); // if using MongoDB
+
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const rideRoutes = require('./routes/rides');
