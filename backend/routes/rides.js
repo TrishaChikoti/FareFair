@@ -4,26 +4,20 @@ const { body } = require('express-validator');
 const rideController = require('../controllers/rideController');
 const auth = require('../middleware/auth');
 
-// @route   POST /api/rides/search
-// @desc    Search for ride fares across providers
-// @access  Public
+// Search rides
 router.post('/search',
   [
-    body('from').notEmpty().withMessage('Pickup location is required'),
-    body('to').notEmpty().withMessage('Destination is required'),
+    body('from').notEmpty().withMessage('Pickup location required'),
+    body('to').notEmpty().withMessage('Destination required'),
     body('vehicleType').optional().isIn(['bike', 'auto', 'car'])
   ],
   rideController.searchRides
 );
 
-// @route   GET /api/rides/history
-// @desc    Get user's ride search history
-// @access  Private
+// Get ride history
 router.get('/history', auth, rideController.getRideHistory);
 
-// @route   POST /api/rides/book
-// @desc    Book a ride (redirect to provider)
-// @access  Private  
+// Book a ride
 router.post('/book', auth,
   [
     body('provider').isIn(['uber', 'ola', 'rapido']),
@@ -32,9 +26,7 @@ router.post('/book', auth,
   rideController.bookRide
 );
 
-// @route   GET /api/rides/providers
-// @desc    Get available providers for a location
-// @access  Public
+// Get providers
 router.get('/providers', rideController.getProviders);
 
 module.exports = router;
