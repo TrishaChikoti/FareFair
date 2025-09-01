@@ -14,9 +14,8 @@ const Home = () => {
 
     try {
       const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
-      const response = await axios.post(`${API_BASE_URL}/api/rides/quotes`, searchData);
-
-      setSearchResults(response.data.results); // ✅ matches backend
+      const response = await axios.post(`${API_BASE_URL}/api/rides/search`, searchData);
+      setSearchResults(response.data.data.results);
     } catch (error) {
       setError(error.response?.data?.message || 'Failed to search rides');
       setSearchResults([]);
